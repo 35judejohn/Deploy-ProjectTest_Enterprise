@@ -1,7 +1,8 @@
+import { AuthRateLimitModule } from "./auth-rate-limit.module.js";
+import { OrganizationAccessGuard } from "./guards/organization-access.guard.js";
 import { AuditModule } from "../audit/audit.module.js";
 import { AuditContextInterceptor } from "../audit/providers/audit-context.interceptor.js";
 import { APP_INTERCEPTOR } from "@nestjs/core";
-import { AuthRateLimitService } from "./providers/auth-rate-limit.service.js";
 import { PasswordMailService } from "./providers/password-mail.service.js";
 import { PasswordSecurityService } from "./providers/password-security.service.js";
 import { APP_GUARD } from "@nestjs/core";
@@ -19,6 +20,7 @@ import { PermissionsGuard } from "./guards/permissions.guard.js";
 @Module({
   imports: [
     IamModule,
+    AuthRateLimitModule,
     AuditModule,
     ConfigModule,
 
@@ -58,13 +60,13 @@ import { PermissionsGuard } from "./guards/permissions.guard.js";
   providers: [
     AuthService,
     { provide: APP_INTERCEPTOR, useClass: AuditContextInterceptor },
-    AuthRateLimitService,
     PasswordMailService,
     PasswordSecurityService,
     JwtAuthGuard,
     CompanyAccessGuard,
     PermissionsGuard,
     { provide: APP_GUARD, useClass: IamAccessGuard },
+    { provide: APP_GUARD, useClass: OrganizationAccessGuard },
   ],
 
   exports: [

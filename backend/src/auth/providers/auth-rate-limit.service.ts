@@ -43,12 +43,18 @@ export class AuthRateLimitService implements OnModuleInit, OnModuleDestroy {
   }
 
   async consume(
-    action: "login" | "forgot" | "reset" | "change",
+    action: "login" | "forgot" | "reset" | "change" | "register",
     ip: string,
     identity = "",
   ): Promise<void> {
     const limits =
-      action === "login" ? [30, 8] : action === "forgot" ? [15, 3] : [20, 8];
+      action === "register"
+        ? [10, 3]
+        : action === "login"
+          ? [30, 8]
+          : action === "forgot"
+            ? [15, 3]
+            : [20, 8];
     const keys = [this.key(`${action}:ip:${ip}`)];
     if (identity)
       keys.push(this.key(`${action}:account:${identity.trim().toLowerCase()}`));
